@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void insertionSort(int arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void selectionSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        int temp = arr[min_idx];
+        arr[min_idx] = arr[i];
+        arr[i] = temp;
+    }
+}
+
+void populateArray(int arr[], int n, int type) {
+    if (type == 0) { 
+        for (int i = 0; i < n; i++) {
+            arr[i] = rand() % n;
+        }
+    } else if (type == 1) { 
+        for (int i = 0; i < n; i++) {
+            arr[i] = i;
+        }
+    } else if (type == 2) { 
+        for (int i = 0; i < n; i++) {
+            arr[i] = n - i;
+        }
+    }
+}
+
+void tempoDeExecucao(void (*sortFunc)(int[], int), int arr[], int n, const char* sortName) {
+    clock_t start = clock();
+    sortFunc(arr, n);
+    clock_t end = clock();
+    double time_taken = ((double)(end - start) / CLOCKS_PER_SEC) * 1000; 
+    printf("%s levou %.2f ms para ordenar um vetor de tamanho %d\n", sortName, time_taken, n);
+}
+
+int main() {
+    int tamanho_vetor[] = {10, 100, 1000, 10000, 100000, 500000}; 
+    int tamanho_numero = sizeof(tamanho_vetor) / sizeof(tamanho_vetor[0]);
+    
+    srand(time(0)); 
+
+    for (int i = 0; i < tamanho_numero; i++) {
+        int n = tamanho_vetor[i];
+        int *arr = (int*)malloc(n * sizeof(int));
+        if (!arr) {
+            printf("Erro ao alocar memória para vetor de tamanho %d.\n", n);
+            continue;
+        }
+
+        populateArray(arr, n, 0);
+        printf("Vetor Desordenado:\n");
+        tempoDeExecucao(bubbleSort, arr, n, "Bubble Sort");
+        tempoDeExecucao(insertionSort, arr, n, "Insertion Sort");
+        tempoDeExecucao(selectionSort, arr, n, "Selection Sort");
+
+        populateArray(arr, n, 1);
+        printf("\nVetor Ordenado Crescente:\n");
+        tempoDeExecucao(bubbleSort, arr, n, "Bubble Sort");
+        tempoDeExecucao(insertionSort, arr, n, "Insertion Sort");
+        tempoDeExecucao(selectionSort, arr, n, "Selection Sort");
+
+        populateArray(arr, n, 2);
+        printf("\nVetor Ordenado Decrescente:\n");
+        tempoDeExecucao(bubbleSort, arr, n, "Bubble Sort");
+        tempoDeExecucao(insertionSort, arr, n, "Insertion Sort");
+        tempoDeExecucao(selectionSort, arr, n, "Selection Sort");
+
+        free(arr);
+        printf("\n------------------------------------------\n");
+    }
+    return 0;
+}
